@@ -1,42 +1,66 @@
-Leitor {
-	id_leitor integer pk increments unique
-	nome varchar(100)
-	email varchar(100)
-	telefone varchar(20)
-	data_cadastro date
-}
+-- Linguagem SQL padrão ANSI-92 ou SQL-92
 
-Autores {
-	id_autor integer pk increments unique
-	nome varchar(150)
-	data_nascimento date
-	nacionalidade varchar(80)
-	biografia text
-}
+-- Criação do banco de dados biblioteca
+CREATE DATABASE IF NOT EXISTS biblioteca;
 
-Categorias {
-	id_categoria integer pk increments unique
-	nome_categoria varchar(100)
-	descricao varchar(255)
-	data_criacao date
-	status_categoria boolean
-}
+-- Definição do banco de dados padrão
+USE biblioteca;
 
-Livros {
-	id_livro integer pk increments unique
-	titulo varchar(255)
-	id_autor integer > Autores.id_autor
-	editora varchar(100)
-	id_categoria integer > Categorias.id_categoria
-}
+-- Criação da tabela leitores
+CREATE TABLE IF NOT EXISTS leitores
+( id_leitor INT(6) PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(100) NOT NULL,
+  email VARCHAR(100),
+  telefone VARCHAR(20),
+  data_cadastro DATE NOT NULL
+);
 
-Emprestimos {
-	id_emprestimo integer pk increments unique
-	id_leitor integer > Leitor.id_leitor
-	id_livro integer > Livros.id_livro
-	data_emprestimo date
-	data_devolucao_prevista date
-	data_devolucao_real date
-	status varchar(20)
-}
+-- Criação da tabela autores
+CREATE TABLE IF NOT EXISTS autores
+( id_autor INT(6) PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(150) NOT NULL,
+  data_nascimento DATE,
+  nacionalidade VARCHAR(80),
+  biografia TEXT
+);
 
+-- Criação da tabela categorias
+CREATE TABLE IF NOT EXISTS categorias
+( id_categoria INT(4) PRIMARY KEY AUTO_INCREMENT,
+  nome_categoria VARCHAR(100) NOT NULL,
+  descricao VARCHAR(255),
+  data_criacao DATE,
+  status_categoria BOOLEAN
+);
+
+-- Criação da tabela livros (Chaves estrangeiras)
+CREATE TABLE IF NOT EXISTS livros
+( id_livro INT(6) PRIMARY KEY AUTO_INCREMENT,
+  titulo VARCHAR(255) NOT NULL,
+  id_autor INT(6),
+  editora VARCHAR(100),
+  id_categoria INT(4),
+
+  -- Chave estrangeira conectando livros com autores
+  FOREIGN KEY (id_autor) REFERENCES autores(id_autor),
+
+  -- Chave estrangeira conectando livros com categorias
+  FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
+);
+
+-- Criação da tabela emprestimos (Chaves estrangeiras)
+CREATE TABLE IF NOT EXISTS emprestimos
+( id_emprestimo INT(7) PRIMARY KEY AUTO_INCREMENT,
+  id_leitor INT(6),
+  id_livro INT(6),
+  data_emprestimo DATE NOT NULL,
+  data_devolucao_prevista DATE NOT NULL,
+  data_devolucao_real DATE,
+  status VARCHAR(20),
+
+  -- Chave estrangeira conectando empréstimos com leitores
+  FOREIGN KEY (id_leitor) REFERENCES leitores(id_leitor),
+
+  -- Chave estrangeira conectando empréstimos com livros
+  FOREIGN KEY (id_livro) REFERENCES livros(id_livro)
+);
